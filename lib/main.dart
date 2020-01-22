@@ -92,6 +92,7 @@ class HomePageState extends State<MyHomePage> {
     List<TableRow> lst = new List<TableRow>();
     for (int r = 0; r < 9; r++) {
       lst.add(getTableRow(r));
+      // TODO: after 2 and 5 add a horizontal separator 
     }
     return lst;
   }
@@ -99,6 +100,7 @@ class HomePageState extends State<MyHomePage> {
   TableRow getTableRow(r) {
     List<Widget> lst = new List<Widget>();
     for (int c = 0; c < 9; c++) {
+      // TODO: after 2 and 5 add a vertical line as separator
       lst.add(new Container(
         color: getHighlightColor(r, c),
         child: new IconButton(
@@ -106,6 +108,7 @@ class HomePageState extends State<MyHomePage> {
             toImg(imgList[r][c]),
           ),
           iconSize: 24.0,
+          padding: EdgeInsets.all(0.0),
           onPressed: (){
             if(initList[r][c] == 0) {
               setState(() {
@@ -153,12 +156,12 @@ class HomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Nyandoku'),
+          title: new Text('Phoodoku'),
         ),
         drawer: new Drawer(
           child: new ListView(
             children: <Widget> [
-              new DrawerHeader(child: new Text('Nyandoku'),),
+              new DrawerHeader(child: new Text('Phoodoku'),),
               new ListTile(
                 title: new Text('Reset'),
                 onTap: () {

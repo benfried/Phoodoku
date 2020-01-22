@@ -65,13 +65,11 @@ class Conflict {
 class RowCol {
   int r;
   int c;
-  RowCol(int r, int c) {
-    this.r = r;
-    this.c = c;
-  }
+  
+  RowCol(this.r, this.c);
 
   @override
-  String toString() => "r:" + r.toString() + ",c:" + c.toString();
+  String toString() => "r:" + r.toString() + ", c:" + c.toString();
 
   @override
   // TODO: implement hashCode
