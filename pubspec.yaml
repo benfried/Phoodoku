@@ -1,4 +1,4 @@
-name: sudoku
+name: Phoodoku
 description: Sudoku game which uses a custom set instead of digits.
 
 dependencies:
@@ -27,16 +27,16 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - set2/0.png
-   - set2/1.png
-   - set2/2.png
-   - set2/3.png
-   - set2/4.png
-   - set2/5.png
-   - set2/6.png
-   - set2/7.png
-   - set2/8.png
-   - set2/9.png
+   - buttons/0.png
+   - buttons/1.png
+   - buttons/2.png
+   - buttons/3.png
+   - buttons/4.png
+   - buttons/5.png
+   - buttons/6.png
+   - buttons/7.png
+   - buttons/8.png
+   - buttons/9.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

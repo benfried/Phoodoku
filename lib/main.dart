@@ -1,6 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:sudoku/Board.dart';
+import 'package:Phoodoku/Board.dart';
 
 void main() => runApp(new MyApp());
 
@@ -9,12 +9,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Nyandoku',
+      title: 'Phoodoku',
       theme: new ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
       home: new MyHomePage(
-        title: 'Nyandoku',
+        title: 'Phoodoku',
       ),
     );
   }
@@ -31,7 +31,7 @@ class MyHomePage extends StatefulWidget {
 
 class HomePageState extends State<MyHomePage> {
   static String toImg(int s){
-    return 'set2/' + s.toString() + '.png';
+    return 'buttons/' + s.toString() + '.png';
   }
 
 
@@ -138,7 +138,7 @@ class HomePageState extends State<MyHomePage> {
       lst.add(new Container(
         color: containerColor,
         child: new IconButton(
-          icon: Image.asset('set2/'+(i + c).toString()+'.png'),
+          icon: Image.asset('buttons/'+(i + c).toString()+'.png'),
           iconSize: 35.0,
           onPressed: () {
             setState(() {
