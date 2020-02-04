@@ -53,13 +53,13 @@ log(s) {
   print(s);
   return s;
 }
-List<List<String>> cross(String A, String B) =>
+List<String> cross(String A, String B) =>
   A.split('').expand((a) => B.split('').map((b) => a+b)).toList();  
 
 const String digits   = '123456789';
 const String rows     = 'ABCDEFGHI';
 const String cols     = digits;
-final List<List<String>> squares = cross(rows, cols);
+final List<String> squares = cross(rows, cols);
 
 final List unitlist = cols.split('').map((c) => cross(rows, c)).toList()
   ..addAll( rows.split('').map((r) => cross(r, cols)))
