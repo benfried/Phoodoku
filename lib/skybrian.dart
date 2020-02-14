@@ -16,6 +16,7 @@
 import 'dart:async' as async;
 import 'dart:io' as io;
 import 'dart:math' as math;
+import 'dart:convert' as convert;
 
 /// Cross-product of the characters in as and the characters in bs.
 List<String> cross(String as, String bs) {
@@ -70,7 +71,7 @@ Map<String, String> parse_grid(String grid) {
 
 /// Convert grid into a map of {square: char} with '0' or '.' for empties.
 Map<String, String> grid_values(String grid) {
-  var chars = new List.from(grid.split("").where((c) => digits.contains(c) || "0.".contains(c)));
+  var chars = new List<String>.from(grid.split("").where((c) => digits.contains(c) || "0.".contains(c))).toList();
   assert(chars.length == 81);
   return new Map.fromIterables(squares, chars);
 }
@@ -163,7 +164,7 @@ Map<String, String> search(Map<String, String> values) {
 /// Parse a file into a list of strings, separated by sep.
 async.Future<List<String>> from_file(String filename, {String sep: '\n'}) {
   var result = new async.Completer();
-  new io.File(filename).readAsString(encoding: io.Encoding.ASCII).then((contents) {
+  new io.File(filename).readAsString(encoding: convert.ascii).then((contents) {
     result.complete(contents.trim().split(sep));        
   });
   return result.future;
@@ -206,7 +207,7 @@ void solve_all(List<String> grids, {String name: "", num showif: null}) {
   time_solve(String grid) {
     var clock = new Stopwatch()..start();
     var values = solve(grid);
-    num t = clock.elapsed.inMicroseconds / Duration.MICROSECONDS_PER_SECOND;
+    num t = clock.elapsed.inMicroseconds / Duration.microsecondsPerSecond;
     if (showif != null && t > showif) {
       display(grid_values(grid));
       if (values != null) {
