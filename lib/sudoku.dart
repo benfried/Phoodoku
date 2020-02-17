@@ -53,10 +53,8 @@ log(s) {
   print(s);
   return s;
 }
-List<String> cross(String A, String B) {
-  // For some reason the original author made this type List<List<String>> which was just wrong.
-  return A.split('').expand((a) => B.split('').map((b) => a+b)).toList();
-}  
+List<String> cross(String A, String B) =>
+  A.split('').expand((a) => B.split('').map((b) => a+b)).toList();  
 
 const String digits   = '123456789';
 const String rows     = 'ABCDEFGHI';
