@@ -19,7 +19,7 @@ order(List seq, {Comparator by, List<Comparator> byAll, on(x), List<Function> on
     ))) 
   : (seq..sort()); 
 
-List<List> zip(a, b) {
+List<List> zip(List a, List b) {
   var n = Math.min(a.length, b.length);
   var z = new List(n);
   for (var i=0; i<n; i++)
@@ -53,13 +53,15 @@ log(s) {
   print(s);
   return s;
 }
-List<List<String>> cross(String A, String B) =>
-  A.split('').expand((a) => B.split('').map((b) => a+b)).toList();  
+List<String> cross(String A, String B) {
+  // For some reason the original author made this type List<List<String>> which was just wrong.
+  return A.split('').expand((a) => B.split('').map((b) => a+b)).toList();
+}  
 
 const String digits   = '123456789';
 const String rows     = 'ABCDEFGHI';
 const String cols     = digits;
-final List<List<String>> squares = cross(rows, cols);
+final List<String> squares = cross(rows, cols);
 
 final List unitlist = cols.split('').map((c) => cross(rows, c)).toList()
   ..addAll( rows.split('').map((r) => cross(r, cols)))
@@ -84,7 +86,7 @@ Map parse_grid(String grid){
 }
 
 Map grid_values(String grid){
-  var chars = grid.split('').where((c) => digits.contains(c) || '0.'.contains(c));
+  var chars = grid.split('').where((c) => digits.contains(c) || '0.'.contains(c)).toList();
   return dict(zip(squares, chars));
 }
 
@@ -120,7 +122,8 @@ Map eliminate(Map values, String s, String d){
 }
 
 /// Display as 2-D grid
-void display(Map values){
+/// bf: give dart type checker the hint that values is a map from string to string
+void display(Map<String, String> values) {
   var width = 1 + squares.map((s) => values[s].length).reduce(Math.max);
   var line = repeat('+' + repeat('-', width*3), 3).substring(1);  
   rows.split('').forEach((r){
