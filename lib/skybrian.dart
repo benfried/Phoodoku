@@ -58,10 +58,10 @@ void test() {
 
 /// Convert grid to a map of possible values, {square: digits}, or
 /// return null if a contradiction is detected.
-Map<String, String> parse_grid(String grid) {
+Map<String, String> parseGrid(String grid) {
   // To start, every square can be any digit; then assign values from the grid.
   var values = new Map.fromIterable(squares, value: (s) => digits);
-  grid_values(grid).forEach((s,d) {
+  gridValues(grid).forEach((s,d) {
     if (values != null && digits.contains(d)) {
       values = assign(values, s, d);
     }
@@ -70,7 +70,7 @@ Map<String, String> parse_grid(String grid) {
 }
 
 /// Convert grid into a map of {square: char} with '0' or '.' for empties.
-Map<String, String> grid_values(String grid) {
+Map<String, String> gridValues(String grid) {
   var chars = new List<String>.from(grid.split("").where((c) => digits.contains(c) || "0.".contains(c))).toList();
   assert(chars.length == 81);
   return new Map.fromIterables(squares, chars);
@@ -81,8 +81,8 @@ Map<String, String> grid_values(String grid) {
 /// Eliminate all the other values (except d) from values[s] and propagate.
 /// Return values, except return null if a contradiction is detected.
 Map<String, String> assign(Map<String, String> values, String s, String d) {
-  var other_values = values[s].replaceAll(d, "");
-  if (other_values.split("").every((d2) => eliminate(values, s, d2))) {
+  var otherValues = values[s].replaceAll(d, "");
+  if (otherValues.split("").every((d2) => eliminate(values, s, d2))) {
     return values;
   } else {
     return null;
@@ -138,7 +138,7 @@ void display(Map<String, String> values) {
 
 // Search
 
-Map<String, String> solve(String grid) => search(parse_grid(grid));
+Map<String, String> solve(String grid) => search(parseGrid(grid));
 
 /// Using depth-first search and propagation, try all possible values.
 Map<String, String> search(Map<String, String> values) {
@@ -162,7 +162,7 @@ Map<String, String> search(Map<String, String> values) {
 // Utilities
 
 /// Parse a file into a list of strings, separated by sep.
-async.Future<List<String>> from_file(String filename, {String sep: '\n'}) {
+async.Future<List<String>> fromFile(String filename, {String sep: '\n'}) {
   var result = new async.Completer();
   new io.File(filename).readAsString(encoding: convert.ascii).then((contents) {
     result.complete(contents.trim().split(sep));        
@@ -199,17 +199,17 @@ bool equal(var a, var b) {
 /// Attempt to solve a sequence of grids. Report results.
 /// When showif is a number of seconds, display puzzles that take longer.
 /// When showif is null, don't display any puzzles."""
-void solve_all(List<String> grids, {String name: "", num showif: null}) {
+void solveAll(List<String> grids, {String name: "", num showif}) {
   fmt(num secs) => secs.toStringAsFixed(2);
   num sumTimes = 0;
   num maxTime = 0;
   int solvedCount = 0;
-  time_solve(String grid) {
+  timeSolve(String grid) {
     var clock = new Stopwatch()..start();
     var values = solve(grid);
     num t = clock.elapsed.inMicroseconds / Duration.microsecondsPerSecond;
     if (showif != null && t > showif) {
-      display(grid_values(grid));
+      display(gridValues(grid));
       if (values != null) {
         print('(${fmt(t)} seconds)');
       }
@@ -220,10 +220,10 @@ void solve_all(List<String> grids, {String name: "", num showif: null}) {
     }
     solvedCount += solved(values) ? 1 : 0;
   }
-  grids.forEach(time_solve);
+  grids.forEach(timeSolve);
   var n = grids.length;
   if (n > 1) {
-    print("Solved ${solvedCount} of ${n} ${name} puzzles (avg ${fmt(sumTimes/n)} secs (${n~/sumTimes} Hz), max ${maxTime} secs)");  
+    print("Solved $solvedCount of $n $name puzzles (avg ${fmt(sumTimes/n)} secs (${n~/sumTimes} Hz), max $maxTime secs)");  
   }
 }
 
@@ -236,7 +236,7 @@ bool solved(Map<String, String> values) {
 /// Make a random puzzle with N or more assignments. Restart on contradictions.
 /// Note the resulting puzzle is not guaranteed to be solvable, but empirically
 /// about 99.8% of them are solvable. Some have multiple solutions.
-String random_puzzle({int n: 17}) {
+String randomPuzzle({int n: 17}) {
   var values = new Map.fromIterable(squares, value: (s) => digits);
   for (var s in shuffled(squares)) {
     if (assign(values, s, values[s][random.nextInt(values[s].length)]) == null) {
@@ -247,7 +247,7 @@ String random_puzzle({int n: 17}) {
       return squares.map((s) => values[s].length == 1 ? values[s][0] : ".").join("");
     } 
   }
-  return random_puzzle(n: n); // Give up and make a new puzzle.
+  return randomPuzzle(n: n); // Give up and make a new puzzle.
 }
 
 var grid1 = '003020600900305001001806400008102900700000008006708200002609500800203009005010300';
@@ -256,13 +256,13 @@ var hard1 = '.....6....59.....82....8....45........3........6..3.54...325..6....
 
 void main() {
   test();
-  solve_all([grid1, grid2, hard1]);    
-  from_file("top95.txt").then((grids) {
-    solve_all(grids, name: "hard");    
-  }).then((x) => from_file("hardest.txt")).then((grids) {
-    solve_all(grids, name: "hardest");        
+  solveAll([grid1, grid2, hard1]);    
+  fromFile("top95.txt").then((grids) {
+    solveAll(grids, name: "hard");    
+  }).then((x) => fromFile("hardest.txt")).then((grids) {
+    solveAll(grids, name: "hardest");        
   }).then((x) {
-    solve_all(new List.generate(100, (i) => random_puzzle()), name: "random", showif: 1.0);    
+    solveAll(new List.generate(100, (i) => randomPuzzle()), name: "random", showif: 1.0);    
   });
 }
 
