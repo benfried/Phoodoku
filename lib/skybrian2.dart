@@ -87,8 +87,12 @@ class Digit implements Comparable<Digit> {
   int removeFrom(int bitset) => bitset & ~this.set;
   
   int compareTo(Digit other) => Comparable.compare(name, other.name);  
-  String toString() => "Digit($name)";
-  
+  // Pretty-printing as 'Digit(x)' actually has the consequence of making randomly generated puzzles look weird and not as Norvig
+  // presents them - we have ....Digit(7)... 
+  // the puzzles are still parsed properly, but that may just be an overly-forgiving parser that skips all chars not in [.0-9]
+  // String toString() => "Digit($name)";
+  String toString() => "$name";
+
   static List<Digit> setToList(int bitset) => new List.from(all.where((d) => d.present(bitset)));
   
   static String setToString(int bitset) => setToList(bitset).map((d) => d.name).join("");
@@ -124,6 +128,7 @@ void test() {
 /// Convert a grid into a map from Squares to digit names with '0' or '.' for empties.
 Map<Square, String> gridValues(String grid) {
   // first make sure that what we were given only has [.0-9]
+  // randomPuzzle creates puzzles that have "Digit(n) (where n in [0-9]) but the where nicely removes them."
   Iterable<String> chars = List.from(grid.split("").where((c) => DIGIT_NAMES.contains(c) || "0.".contains(c)));
   assert(chars.length == 81);                       // if chars is not 81, the argument wasn't a valid puzzle
   return Map<Square,String>.fromIterables(squares, chars);
@@ -300,6 +305,8 @@ Puzzle solve(String grid) {
   return search(new Puzzle.parse(grid));
 }
 
+Puzzle solvePuzzle(Puzzle p) => search(p);
+
 Puzzle search(Puzzle p) {
   if (p == null) {
     return null;
@@ -330,15 +337,6 @@ String center(String s, int width) {
   return (before + s + after).substring(0, width);  
 }
 
-/// Copies a list. This is a bit faster than List.from().
-List copyList(List original) {
-  var copy = new List(original.length);
-  for (int i = 0; i < original.length; i++) {
-    copy[i] = original[i];
-  }
-  return copy;
-}
-
 /// Parse a file into a list of strings, separated by sep.
 async.Future<List<String>> fromFile(String filename, {String sep: '\n'}) {
   var result = new async.Completer<List<String>>();
@@ -352,12 +350,8 @@ final random = new math.Random();
 
 /// Returns a randomly shuffled copy of the input list.
 List shuffled(List source) {
-  var out = new List(source.length);
-  for (var i = 0; i < out.length; i++) {
-    var j = random.nextInt(i + 1);
-    out[i] = out[j];
-    out[j] = source[i];
-  }
+  var out = List.from(source);
+  out.shuffle(random);
   return out;
 }
 
@@ -399,10 +393,10 @@ void solveAll(List<String> grids, {String name: "", num showif: 0.0}) {
 /// about 99.8% of them are solvable. Some have multiple solutions.
 String randomPuzzle({int n: 17}) {
   var p = new Puzzle.blank();
-  for (var s in shuffled(squares)) {
-    var choices = p.choices(s);
+  for (var s1 in shuffled(squares)) {
+    var choices = p.choices(s1);
     var choice = choices[random.nextInt(choices.length)];
-    if (!p.assign(s, choice)) {
+    if (!p.assign(s1, choice)) {
       break;
     }
     var ds = squares.where((s) => p.solvedSquare(s));
@@ -420,13 +414,13 @@ var hard1 = '.....6....59.....82....8....45........3........6..3.54...325..6....
 void main() {
   test();
   solveAll([grid1, grid2], showif: null);
-  // solve_all([hard1]);
+  solveAll([hard1]);
   fromFile("top95.txt").then((grids) {
     solveAll(grids, name: "hard", showif: null);    
   }).then((x) => fromFile("hardest.txt")).then((grids) {
     solveAll(grids, name: "hardest", showif: null);        
   }).then((x) {
-    solveAll(new List.generate(100, (i) => randomPuzzle()), name: "random", showif: 1.0);    
+    solveAll(List.generate(100, (i) => randomPuzzle()), name: "random", showif: 1.0);    
   });
 }
 
