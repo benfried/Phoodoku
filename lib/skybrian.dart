@@ -60,7 +60,7 @@ void test() {
 /// return null if a contradiction is detected.
 Map<String, String> parseGrid(String grid) {
   // To start, every square can be any digit; then assign values from the grid.
-  var values = new Map.fromIterable(squares, value: (s) => digits);
+  var values = new Map<String,String>.fromIterable(squares, value: (s) => digits);
   gridValues(grid).forEach((s,d) {
     if (values != null && digits.contains(d)) {
       values = assign(values, s, d);
@@ -71,9 +71,9 @@ Map<String, String> parseGrid(String grid) {
 
 /// Convert grid into a map of {square: char} with '0' or '.' for empties.
 Map<String, String> gridValues(String grid) {
-  var chars = new List<String>.from(grid.split("").where((c) => digits.contains(c) || "0.".contains(c))).toList();
+  var chars = List<String>.from(grid.split("").where((c) => digits.contains(c) || "0.".contains(c))).toList();
   assert(chars.length == 81);
-  return new Map.fromIterables(squares, chars);
+  return Map.fromIterables(squares, chars);
 }
 
 // Constraint propagation
@@ -163,7 +163,7 @@ Map<String, String> search(Map<String, String> values) {
 
 /// Parse a file into a list of strings, separated by sep.
 async.Future<List<String>> fromFile(String filename, {String sep: '\n'}) {
-  var result = new async.Completer();
+  var result = new async.Completer<List<String>>();
   new io.File(filename).readAsString(encoding: convert.ascii).then((contents) {
     result.complete(contents.trim().split(sep));        
   });
@@ -211,6 +211,7 @@ void solveAll(List<String> grids, {String name: "", num showif}) {
     if (showif != null && t > showif) {
       display(gridValues(grid));
       if (values != null) {
+        display(values);
         print('(${fmt(t)} seconds)');
       }
     }
@@ -237,7 +238,7 @@ bool solved(Map<String, String> values) {
 /// Note the resulting puzzle is not guaranteed to be solvable, but empirically
 /// about 99.8% of them are solvable. Some have multiple solutions.
 String randomPuzzle({int n: 17}) {
-  var values = new Map.fromIterable(squares, value: (s) => digits);
+  var values = new Map<String,String>.fromIterable(squares, value: (s) => digits);
   for (var s in shuffled(squares)) {
     if (assign(values, s, values[s][random.nextInt(values[s].length)]) == null) {
       break;
@@ -256,11 +257,11 @@ var hard1 = '.....6....59.....82....8....45........3........6..3.54...325..6....
 
 void main() {
   test();
-  solveAll([grid1, grid2, hard1]);    
+  solveAll([grid1, grid2, hard1], name: "internal", showif: 10);    
   fromFile("top95.txt").then((grids) {
     solveAll(grids, name: "hard");    
   }).then((x) => fromFile("hardest.txt")).then((grids) {
-    solveAll(grids, name: "hardest");        
+    solveAll(grids, name: "hardest", showif:2);        
   }).then((x) {
     solveAll(new List.generate(100, (i) => randomPuzzle()), name: "random", showif: 1.0);    
   });
