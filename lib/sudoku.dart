@@ -72,27 +72,27 @@ final Map peers = dict(squares.map((s) =>
     [s, units[s].expand((u) => u).toSet()..removeAll([s])]));    
 
 /// Parse a Grid
-Map parse_grid(String grid){
+Map parseGrid(String grid){
   var values = dict(squares.map((s) => [s, digits]));
-  var gridValues = grid_values(grid);
-  for (var s in gridValues.keys){
-    var d = gridValues[s];
+  var gv = gridValues(grid);
+  for (var s in gv.keys){
+    var d = gv[s];
     if (digits.contains(d) && assign(values, s, d) == null)
       return null;
   }
   return values;
 }
 
-Map grid_values(String grid){
+Map gridValues(String grid){
   var chars = grid.split('').where((c) => digits.contains(c) || '0.'.contains(c)).toList();
   return dict(zip(squares, chars));
 }
 
 /// Constraint Propagation
 Map assign(Map values, String s, String d){
-  var other_values = values[s].replaceAll(d, '');
+  var otherValues = values[s].replaceAll(d, '');
 //  print("$s, $d, $other_values");
-  if (all(other_values.split('').map((d2) => eliminate(values, s, d2))))
+  if (all(otherValues.split('').map((d2) => eliminate(values, s, d2))))
     return values;
   return null;
 }
@@ -134,7 +134,7 @@ void display(Map<String, String> values) {
 }
 
 /// Search 
-Map solve(String grid) => search(parse_grid(grid));
+Map solve(String grid) => search(parseGrid(grid));
 
 Map search(Map values){
   if (values == null)
