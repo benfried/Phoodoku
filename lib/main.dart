@@ -1,8 +1,16 @@
 import 'dart:collection';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+
 import 'package:Phoodoku/Board.dart';
+import 'package:Phoodoku/skybrian2.dart';
 
 void main() => runApp(new MyApp());
+
+/// Steps: create a new puzzle and solve it, storing in p and solved
+/// create a random puzzle (it's a string)
+/// display puzzle-as-string in GUI
+/// 
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -14,7 +22,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
       ),
       home: new MyHomePage(
-        title: 'Phoodoku',
+        title: 'Phoodoku'
       ),
     );
   }
@@ -24,8 +32,8 @@ class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
-
-  @override
+  
+    @override
   HomePageState createState() => new HomePageState();
 }
 
@@ -34,6 +42,7 @@ class HomePageState extends State<MyHomePage> {
     return 'buttons/' + s.toString() + '.png';
   }
 
+  Puzzle puzzle;
 
   List<List<int>> imgList = [
     [0,0,0,2,6,0,7,0,1],
@@ -88,48 +97,63 @@ class HomePageState extends State<MyHomePage> {
     else                            return Colors.white;
   }
 
-  List<TableRow> getTableRowLst() {
-    List<TableRow> lst = new List<TableRow>();
-    for (int r = 0; r < 9; r++) {
-      lst.add(getTableRow(r));
-      // TODO: after 2 and 5 add a horizontal separator 
+  List <TableRow> newGetTableRowList() {
+    List<TableRow> _trl = List<TableRow>();
+    for (int r = 0; r < 3; r++) {
+      // make 9 3x3 subtables
+      _trl.add(_newTableRow(r));
     }
-    return lst;
+    return _trl;
   }
 
-  TableRow getTableRow(r) {
-    List<Widget> lst = new List<Widget>();
-    for (int c = 0; c < 9; c++) {
-      // TODO: after 2 and 5 add a vertical line as separator
-      lst.add(new Container(
-        color: getHighlightColor(r, c),
-        child: new IconButton(
-          icon: Image.asset(
-            toImg(imgList[r][c]),
-          ),
+  TableRow _newTableRow(int r) {
+    List <Widget> _lst = List<Widget>();
+
+    for (int c = 0; c < 3; c++) {
+      // make the 3x3 table here
+      _lst.add(_subTable(r, c));
+    }
+    return TableRow(children: _lst);
+  }
+
+  
+  /// this is wrong, should be building & returning a table not a widget, and not returning a tablerow
+  Table _subTable(int r, int c) {
+    List<TableRow> _trl = List<TableRow>();
+    for (int _r = (r*3); _r < (r*3) + 3; _r++) {
+      List <Widget> _w = List<Widget>();
+      for (int _c = c*3; _c < (c*3) + 3; _c++) {
+        _w.add(Container(
+          margin: const EdgeInsets.all(2.0),
+          color:getHighlightColor(_r, _c),
+          child: _iconButton(_r, _c)));
+      }
+      _trl.add(TableRow(children:_w));
+    }
+    return Table(children: _trl, 
+                border: new TableBorder.all(
+                      color: Colors.blueGrey,
+                      width: 1.0)
+    );
+  }
+
+  IconButton _iconButton(int r, int c) {
+    return IconButton(
+          icon: Image.asset(toImg(imgList[r][c])), 
           iconSize: 24.0,
-          padding: EdgeInsets.all(0.0),
-          onPressed: (){
-            if(initList[r][c] == 0) {
+          padding: EdgeInsets.all(3.0),
+          onPressed: () {
+            // should be: if puzzle[r][c] is unset, set it to the cursor
+            if (initList[r][c] == 0) {
               setState(() {
-              imgList[r][c] = cursor;
-               changeConflicts();
+                imgList[r][c] = cursor;
+                changeConflicts();
               });
             }
-          }
-        ),
-      ));
-    }
-    return new TableRow(children: lst);
+          });
   }
-
-  List<TableRow> getKeyRowlst() {
-    List<TableRow> lst = new List<TableRow>();
-    lst.add(getKeyRow(0));
-    lst.add(getKeyRow(5));
-    return lst;
-  }
-
+  
+      
   TableRow getKeyRow(int c) {
     List<Widget> lst = new List<Widget>();
     for (int i = 0; i <= 4; i++) {
@@ -150,6 +174,12 @@ class HomePageState extends State<MyHomePage> {
       );
     }
     return new TableRow(children: lst);
+  }
+  List<TableRow> getKeyRowlst() {
+    List<TableRow> lst = new List<TableRow>();
+    lst.add(getKeyRow(0));
+    lst.add(getKeyRow(5));
+    return lst;
   }
 
   @override
@@ -187,13 +217,11 @@ class HomePageState extends State<MyHomePage> {
         body: new Column(
           children:[
           new Table(
-            children: getTableRowLst(),
-            border: new TableBorder.all(
-                color: Colors.blueAccent
-            ),
+            children: newGetTableRowList(),
+            border: TableBorder.symmetric(inside: BorderSide(color: Colors.yellow, width: 20.0))
           ),
           new Padding(
-            padding: new EdgeInsets.only(top:40.0),
+            padding: new EdgeInsets.only(top:70.0),
             child: new Table(
               children: getKeyRowlst(),
               border: new TableBorder.all(
@@ -202,7 +230,10 @@ class HomePageState extends State<MyHomePage> {
             )
           )
 
-    ]
-        ));
+          ]
+
+        )
+    );
   }
 }
+    
