@@ -77,7 +77,7 @@ class RowCol {
 
   @override
   bool operator ==(other) {
-    // TODO: implement ==
+    // implement ==
     return (this.r == other.r) && (this.c == other.c);
   }
 }
